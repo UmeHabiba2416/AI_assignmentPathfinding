@@ -39,7 +39,7 @@ python pathfinding_visualizer.py
 
 ## How to Use
 
-1. **(Optional) Resize the grid**
+1. ** Resize the grid**
    Enter Rows/Columns at the top and click **Create Grid**.
 
 2. **Choose a mode**
@@ -92,3 +92,8 @@ pathfinding-visualizer/
 - All movement is 4-directional (up, down, left, right) with uniform edge cost of 1.
 - The heuristic choice only affects GBFS and A* — BFS and UCS ignore it.
 - Grid dimensions must be greater than 2×2 for a valid start/goal placement.
+
+## Written By:
+
+- Um e Habiba
+- Amna 
