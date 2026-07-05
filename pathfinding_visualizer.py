@@ -7,9 +7,6 @@ import time
 import math
 from collections import deque
 
-# ---------------------------------------------------------
-# Config
-# ---------------------------------------------------------
 rows, cols = 20, 30
 size = 25
 
@@ -21,19 +18,15 @@ yellow = "yellow"
 blue = "#87CEEB"
 green = "green"
 
-# ---------------------------------------------------------
 # Grid state
-# ---------------------------------------------------------
+
 grid = [[0 for _ in range(cols)] for _ in range(rows)]  # 0=empty 1=wall
 start = (1, 1)
 goal = (rows - 2, cols - 2)
 mode = "wall"
-# ---------------------------------------------------------
-# Helper functions
-# ---------------------------------------------------------
+
 def valid(r, c):
     return 0 <= r < rows and 0 <= c < cols
-
 
 def neighbors(r, c):
     result = []
@@ -43,13 +36,11 @@ def neighbors(r, c):
             result.append((nr, nc))
     return result
 
-
 def h(a, b, kind):
     if kind == "Manhattan":
         return abs(a[0] - b[0]) + abs(a[1] - b[1])
     else:  # Euclidean
         return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
-
 
 def get_path(parent, node):
     path = [node]
@@ -59,13 +50,6 @@ def get_path(parent, node):
     path.reverse()
     return path
 
-
-# ---------------------------------------------------------
-# Search algorithms
-# Each returns: visited (list of nodes in expansion order),
-#               frontier (list of nodes added to queue, in order),
-#               parent (dict), found (bool), cost (number)
-# ---------------------------------------------------------
 def bfs(start, goal):
     queue = deque([start])
     parent = {}
@@ -115,7 +99,6 @@ def ucs(start, goal):
 
     return visited, frontier, parent, False, 0
 
-
 def gbfs(start, goal, kind):
     queue = [(h(start, goal, kind), start)]
     parent = {}
@@ -138,7 +121,6 @@ def gbfs(start, goal, kind):
                 frontier.append(n)
 
     return visited, frontier, parent, False, 0
-
 
 def astar(start, goal, kind):
     queue = [(h(start, goal, kind), start)]
@@ -165,18 +147,12 @@ def astar(start, goal, kind):
 
     return visited, frontier, parent, False, 0
 
-
-# ---------------------------------------------------------
-# GUI
-# One row of controls above the grid. Nothing fancy.
-# ---------------------------------------------------------
 class App:
     def __init__(self, root):
         self.root = root
         root.title("Pathfinding Visualizer")
         root.configure(padx=10, pady=10)
-
-        # Grid size controls
+        #grid size controls
         row0 = ttk.Frame(root)
         row0.pack(pady=5)
 
@@ -190,12 +166,12 @@ class App:
 
         ttk.Button(row0, text="Create Grid", command=self.create_grid).pack(side="left", padx=5)
 
-        # The grid (drawing surface)
+        #grid (drawing surface)
         self.canvas = tk.Canvas(root, width=cols * size, height=rows * size, bg="white")
         self.canvas.pack(pady=10)
         self.canvas.bind("<Button-1>", self.on_click)
 
-        # Mode: wall / start / goal
+        #mode: wall / start / goal
         self.mode_label = tk.StringVar(value="Mode: Wall")
         ttk.Label(root, textvariable=self.mode_label).pack()
 
@@ -207,7 +183,6 @@ class App:
         ttk.Button(row1, text="Random Maze", command=self.random_maze).pack(side="left", padx=3)
         ttk.Button(row1, text="Clear", command=self.clear_grid).pack(side="left", padx=3)
 
-        # Density, algorithm, heuristic, run
         row2 = ttk.Frame(root)
         row2.pack(pady=5)
 
@@ -216,22 +191,18 @@ class App:
         ttk.Entry(row2, textvariable=self.density, width=5).pack(side="left", padx=5)
 
         self.algo = tk.StringVar(value="BFS")
-        ttk.Combobox(row2, textvariable=self.algo, width=8, state="readonly",
-                     values=["BFS", "UCS", "GBFS", "A*"]).pack(side="left", padx=5)
+        ttk.Combobox(row2, textvariable=self.algo, width=8, state="readonly",values=["BFS", "UCS", "GBFS", "A*"]).pack(side="left", padx=5)
 
         self.heur = tk.StringVar(value="Manhattan")
-        ttk.Combobox(row2, textvariable=self.heur, width=10, state="readonly",
-                     values=["Manhattan", "Euclidean"]).pack(side="left", padx=5)
+        ttk.Combobox(row2, textvariable=self.heur, width=10, state="readonly",values=["Manhattan", "Euclidean"]).pack(side="left", padx=5)
 
         ttk.Button(row2, text="Run", command=self.run_search).pack(side="left", padx=5)
 
-        # Results
+        #results
         self.info = tk.StringVar(value="Nodes Expanded: -   Path Cost: -   Time: - ms")
         ttk.Label(root, textvariable=self.info).pack(pady=5)
 
         self.draw_grid()
-
-    # ---- button actions ----
 
     def create_grid(self):
         global rows, cols, grid, start, goal
@@ -271,13 +242,11 @@ class App:
                 if (r, c) == goal:
                     color = red
                 x0, y0 = c * size, r * size
-                self.canvas.create_rectangle(x0, y0, x0 + size, y0 + size,
-                                              fill=color, outline="gray")
+                self.canvas.create_rectangle(x0, y0, x0 + size, y0 + size,fill=color, outline="gray")
 
     def color_cell(self, r, c, color):
         x0, y0 = c * size, r * size
-        self.canvas.create_rectangle(x0, y0, x0 + size, y0 + size,
-                                      fill=color, outline="gray")
+        self.canvas.create_rectangle(x0, y0, x0 + size, y0 + size,fill=color, outline="gray")
 
     def on_click(self, event):
         global start, goal
@@ -295,7 +264,6 @@ class App:
         elif mode == "goal":
             goal = (r, c)
             grid[r][c] = 0
-
         self.draw_grid()
 
     def clear_grid(self):
@@ -342,18 +310,16 @@ class App:
             else:
                 self.root.after(5, lambda: self.animate(frontier, visited, parent, found, cost,
                                                           count, elapsed, phase + 1, 0))
-        # Phase 1: color visited nodes one at a time (blue)
+        #color visited nodes one at a time (blue)
         elif phase == 1:
             if i < len(visited):
                 node = visited[i]
                 if node != start and node != goal:
                     self.color_cell(*node, blue)
-                self.root.after(5, lambda: self.animate(frontier, visited, parent, found, cost,
-                                                          count, elapsed, phase, i + 1))
+                self.root.after(5, lambda: self.animate(frontier, visited, parent, found, cost,count, elapsed, phase, i + 1))
             else:
-                self.root.after(5, lambda: self.animate(frontier, visited, parent, found, cost,
-                                                          count, elapsed, phase + 1, 0))
-        # Phase 2: draw final path (green)
+                self.root.after(5, lambda: self.animate(frontier, visited, parent, found, cost,count, elapsed, phase + 1, 0))
+        #draw final path (green)
         else:
             if found:
                 path = get_path(parent, goal)
@@ -363,7 +329,6 @@ class App:
                 self.info.set(f"Nodes Expanded: {count}   Path Cost: {cost}   Time: {elapsed:.2f} ms")
             else:
                 self.info.set(f"Nodes Expanded: {count}   No path found!   Time: {elapsed:.2f} ms")
-
 
 if __name__ == "__main__":
     root = tk.Tk()
